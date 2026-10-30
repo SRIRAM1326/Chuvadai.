@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Chuvadai turns PDFs, scans, and photos into editable, downloadable text with BharatOCR.">
+    <meta name="theme-color" content="#f6f2e9">
+    <title>Chuvadai — Smart Document Reader</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body data-max-upload-mb="{{ max_upload_mb }}">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Chuvadai home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M10 5.5h9.2L25 11.3v15.2H10V5.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M19 5.8v5.7h5.6M13.4 15.3h8.2M13.4 19.1h8.2M13.4 22.9h5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <strong>Chuvadai<span>.</span></strong>
+            <small>Smart Document Reader</small>
+          </span>
+        </a>
+
+        <div class="status-pill" id="statusPill" title="OCR engine status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="engineStatus">Checking OCR…</span>
+        </div>
+      </header>
+
+      <main id="main">
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow"><span aria-hidden="true"></span> भारत का अपना OCR</p>
+            <h1>Documents in.<br><em>Editable text</em> out.</h1>
+            <p class="lede">
+              Upload a PDF, scan, or phone photo. Chuvadai uses BharatOCR
+              to read the page, you polish the details, then download a clean
+              text file.
+            </p>
+
+            <div class="hero-features" aria-label="Key features">
+              <span class="feature-chip">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4.5 10.5 3.2 3.2 7.8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                BharatOCR powered
+              </span>
+              <span class="feature-chip">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4.5 10.5 3.2 3.2 7.8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Text stays editable
+              </span>
+              <span class="feature-chip">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4.5 10.5 3.2 3.2 7.8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Uploads auto-deleted
+              </span>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-halo"></div>
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+
+            <div class="document-mock">
+              <div class="doc-top">
+                <span class="doc-seal">भा</span>
+                <div class="doc-heading-lines">
+                  <i></i>
+                  <i></i>
+                </div>
+              </div>
+              <div class="doc-title-lines">
+                <i></i>
+                <i></i>
+              </div>
+              <div class="doc-rule"></div>
+              <div class="doc-grid">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <div class="doc-table">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="scan-beam"></div>
+            </div>
+
+            <div class="float-card float-ocr">
+              <span class="float-icon">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M7 4.5h7.5L18.5 8.5v11H7v-15Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                  <path d="M14 4.8v4h4M9.5 12h6M9.5 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span><strong>Text detected</strong><small>Ready to review</small></span>
+            </div>
+
+            <div class="float-card float-txt">
+              <span class="txt-badge">.TXT</span>
+              <span><strong>Export ready</strong><small>Download anytime</small></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="workspace" id="workspace" aria-label="Document workspace">
+          <article class="panel upload-panel">
+            <div class="panel-heading">
+              <span class="step-number">01</span>
+              <div>
+                <h2>Add a document</h2>
+                <p>Choose a file or drop it below.</p>
+              </div>
+            </div>
+
+            <div
+              class="dropzone"
+              id="dropzone"
+              role="button"
+              tabindex="0"
+              aria-label="Upload a document. Drag and drop, or press Enter to browse."
+              aria-describedby="fileHints"
+            >
+              <input
+                id="fileInput"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
+                hidden
+              >
+
+              <div class="dropzone-idle" id="dropzoneIdle">
+                <span class="upload-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <path d="M16 21V7m0 0-5 5m5-5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 19v4.5A2.5 2.5 0 0 0 9.5 26h13a2.5 2.5 0 0 0 2.5-2.5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <p class="drop-title">Drop your document here</p>
+                <p class="drop-subtitle">or <span class="text-link">browse files</span></p>
+                <p class="file-hints" id="fileHints">PDF, JPG or PNG · up to {{ max_upload_mb }} MB</p>
+              </div>
+
+              <div class="file-card" id="fileCard" hidden>
+                <span class="file-type" id="fileType">PDF</span>
+                <span class="file-info">
+                  <strong id="fileName">document.pdf</strong>
+                  <small id="fileMeta">PDF · 0 KB</small>
+                </span>
+                <button class="remove-file" id="removeFile" type="button" aria-label="Remove selected file">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="sample-row">
+              <span>No document handy?</span>
+              <button class="link-button" id="sampleBtn" type="button">Try a sample document</button>
+            </div>
+
+            <div class="inline-error" id="uploadError" role="alert" hidden></div>
+
+            <button class="primary-btn" id="extractBtn" type="button" disabled>
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn-label">Extract text</span>
+              <svg class="btn-arrow" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <div class="progress-wrap" id="progressWrap" hidden>
+              <div class="progress-head">
+                <span id="progressLabel">Uploading document…</span>
+                <span id="progressPct">0%</span>
+              </div>
+              <div
+                class="progress-track"
+                role="progressbar"
+                aria-labelledby="progressLabel"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+              >
+                <div class="progress-bar" id="progressBar"></div>
+              </div>
+            </div>
+
+            <p class="privacy-note">
+              <svg viewBox="0 0 18 18" aria-hidden="true">
+                <rect x="4" y="8" width="10" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6.5 8V6a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              Files are removed from the server immediately after processing.
+            </p>
+
+            <div class="upload-tips">
+              <span class="tips-icon" aria-hidden="true">i</span>
+              <p><strong>For the cleanest text</strong> use a flat, well-lit scan and keep the whole page in frame.</p>
+            </div>
+          </article>
+
+          <article class="panel result-panel" id="resultPanel">
+            <div class="panel-heading">
+              <span class="step-number">02</span>
+              <div>
+                <h2>Review &amp; download</h2>
+                <p>Fix any line the OCR missed.</p>
+              </div>
+              <span class="engine-badge" id="engineBadge" hidden></span>
+            </div>
+
+            <div class="result-empty" id="resultEmpty">
+              <span class="empty-illustration" aria-hidden="true">
+                <svg viewBox="0 0 120 120" fill="none">
+                  <rect x="25" y="14" width="68" height="90" rx="10" fill="#FFFDF8" stroke="#D9D0C0" stroke-width="2"/>
+                  <path d="M78 14v20h15" fill="#F7F1E6" stroke="#D9D0C0" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M40 49h38M40 60h38M40 71h27M40 82h18" stroke="#E7DED0" stroke-width="3" stroke-linecap="round"/>
+                  <circle cx="87" cy="86" r="18" fill="#E8F5F1" stroke="#0F766E" stroke-width="2"/>
+                  <path d="m79 86 5 5 10-11" stroke="#0F766E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <h3>Your text will appear here</h3>
+              <p>Upload a document and press <strong>Extract text</strong> to begin.</p>
+            </div>
+
+            <div class="result-content" id="resultContent" hidden>
+              <div class="result-toolbar">
+                <div class="result-meta">
+                  <span id="pageCount">1 page</span>
+                  <span class="meta-divider" aria-hidden="true"></span>
+                  <span id="wordCount">0 words</span>
+                </div>
+                <div class="result-actions">
+                  <button class="icon-btn" id="copyBtn" type="button" disabled>
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <rect x="7" y="7" width="9" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                      <path d="M13 7V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    Copy
+                  </button>
+                  <button class="icon-btn" id="clearBtn" type="button">
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M4 6h12M8 3.5h4M6 6l.7 10h6.6L14 6M9 9v4.5M11 9v4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Clear
+                  </button>
+                </div>
+              </div>
+
+              <label class="sr-only" for="extractedText">Extracted text</label>
+              <textarea
+                id="extractedText"
+                spellcheck="false"
+                placeholder="Extracted text will appear here…"
+              ></textarea>
+
+              <div class="warnings" id="warnings" role="status" hidden>
+                <svg viewBox="0 0 18 18" aria-hidden="true">
+                  <path d="M9 2.8 16 15H2L9 2.8Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                  <path d="M9 7v3.5M9 13v.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <span id="warningText"></span>
+              </div>
+
+              <div class="result-footer">
+                <span id="charCount">0 characters</span>
+                <button class="primary-btn primary-btn-small" id="downloadBtn" type="button" disabled>
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M10 3.5v9m0 0 3.8-3.8M10 12.5 6.2 8.7M4 14.5v2h12v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Download .txt
+                </button>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="how-it-works" aria-labelledby="howTitle">
+          <div class="section-heading">
+            <p class="section-kicker">From paper to plain text</p>
+            <h2 id="howTitle">Four small steps. One clean result.</h2>
+          </div>
+          <div class="steps">
+            <div class="step">
+              <span class="step-index">01</span>
+              <h3>Upload</h3>
+              <p>Add a PDF or a clear photo of your document.</p>
+            </div>
+            <div class="step">
+              <span class="step-index">02</span>
+              <h3>Extract</h3>
+              <p>BharatOCR reads the text, page by page.</p>
+            </div>
+            <div class="step">
+              <span class="step-index">03</span>
+              <h3>Edit</h3>
+              <p>Correct names, numbers, or line breaks in place.</p>
+            </div>
+            <div class="step">
+              <span class="step-index">04</span>
+              <h3>Download</h3>
+              <p>Save your reviewed text as a UTF-8 .txt file.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Chuvadai · Built with Flask and BharatOCR.</p>
+        <p><span class="footer-dot" aria-hidden="true"></span> Your documents stay yours.</p>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  </body>
+</html>
